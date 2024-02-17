@@ -2,11 +2,15 @@
     <h2 class="text-center mt-5">Login</h2>
     <div class="container d-flex justify-content-center mt-4">
 
-        <form class="w-50 ms-auto me-auto" action="{{ route('create.login') }}" method="POST">
+        <form class="w-50 ms-auto me-auto" action="{{ route('post.login') }}" method="POST">
             @csrf
             @if (session()->has('error'))
                 <div class="alert alert-danger mt-2 mb-2">
                     {{ session('error') }}
+                </div>
+            @elseif (session()->has('success'))
+                <div class="alert alert-success mt-2 mb-2">
+                    {{ session('success') }}
                 </div>
             @endif
             <div class="form-group">

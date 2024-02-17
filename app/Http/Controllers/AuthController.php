@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -12,7 +14,7 @@ class AuthController extends Controller
         return view('components.back.login');
     }
 
-    public function createLogin(Request $request)
+    public function postLogin(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
@@ -29,5 +31,33 @@ class AuthController extends Controller
     public function register()
     {
         return view('components.back.registration');
+    }
+
+    public function createRegister(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:6'
+        ]);
+        $sql = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password)
+        ]);
+
+        if (!$sql) {
+            echo ("something went wrong");
+
+            return redirect()->route('create.register')->with('error', 'something went wrong');
+        }
+        return redirect()->route('view.login')->with('success', 'Successfully Registered, Please login to continue.');
+    }
+
+    public function logout()
+    {
+        session()->flush();
+        Auth::logout();
+        redirect()->route('view.login');
     }
 }
