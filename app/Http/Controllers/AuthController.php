@@ -9,8 +9,20 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+
+    public function index()
+    {
+        if (Auth::check()) {
+            return view('welcome');
+        } else {
+            return redirect()->route('view.login')->with('error', 'Please login to see home page.');
+        }
+    }
     public function login()
     {
+        if (Auth::check()) {
+            return redirect()->route('home');
+        }
         return view('components.back.login');
     }
 
@@ -23,13 +35,16 @@ class AuthController extends Controller
 
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
-            return redirect()->intended(route('welcome'));
+            return redirect()->intended(route('home'));
         }
         return redirect()->route('create.login')->with('error', 'Invalid email or password');
     }
 
     public function register()
     {
+        if (Auth::check()) {
+            return redirect()->route('home');
+        }
         return view('components.back.registration');
     }
 
@@ -56,8 +71,9 @@ class AuthController extends Controller
 
     public function logout()
     {
+
         session()->flush();
         Auth::logout();
-        redirect()->route('view.login');
+        return redirect()->route('view.login');
     }
 }
